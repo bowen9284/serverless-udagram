@@ -13,6 +13,7 @@
     "http-aws-es": "^6.0.0",
     "jimp": "^0.6.8",
     "jsonwebtoken": "^8.5.1",
+    "middy": "^0.36.0",
     "serverless-aws-documentation": "^1.1.0",
     "serverless-reqvalidator-plugin": "^1.0.3",
     "source-map-support": "^0.5.10"
