@@ -6,7 +6,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 export class GroupAccess {
 
   constructor(
-    private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
+    private readonly docClient: DocumentClient = createDynamoDBClient(),
     private readonly groupsTable = process.env.GROUPS_TABLE) {
   }
 
@@ -29,4 +29,16 @@ export class GroupAccess {
 
     return group
   }
+}
+
+function createDynamoDBClient() {
+  if (process.env.IS_OFFLINE) {
+    console.log('Creating a local DynamoDb instance')
+    return new AWS.DynamoDB.DocumentClient({
+      region: 'localhost',
+      endpoint: 'http://localhost:8000'
+    })
+  }
+
+  return new AWS.DynamoDB.DocumentClient()
 }
