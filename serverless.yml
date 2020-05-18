@@ -7,6 +7,7 @@ plugins:
   - serverless-aws-documentation
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-plugin-canary-deployments
 
 provider:
   name: aws
@@ -27,6 +28,11 @@ provider:
     AUTH_0_SECRET_FIELD: auth0Secret
 
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - codedeploy:*
+      Resource:
+        - '*'
     - Effect: Allow
       Action:
         - dynamodb:Scan
@@ -110,13 +116,16 @@ functions:
           method: post
           path: groups
           cors: true
-          authorizer: Auth
+          # authorizer: Auth
           reqValidatorName: RequestBodyValidator
           documentation:
             summary: Create a new group
             description: Create a new group
             requestModels:
               'application/json': GroupRequest
+    deploymentSettings:
+      type: Linear10PercentEvery1Minute
+      alias: Live
 
   GetImages:
     handler: src/lambda/http/getImages.handler
@@ -125,6 +134,9 @@ functions:
           method: get
           path: groups/{groupId}/images
           cors: true
+    deploymentSettings:
+      type: Linear10PercentEvery1Minute
+      alias: Live
   GetImage:
     handler: src/lambda/http/getImage.handler
     events:

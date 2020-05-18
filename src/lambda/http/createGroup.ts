@@ -8,7 +8,6 @@ import { CreateGroupRequest } from '../../requests/CreateGroupRequest';
 import { createGroup } from '../../businessLogic/groups';
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-
   console.log('Processing event: ', event);
 
   const newGroup: CreateGroupRequest = JSON.parse(event.body);
