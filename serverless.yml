@@ -10,6 +10,10 @@ plugins:
   - serverless-plugin-canary-deployments
 
 provider:
+  tracing:
+    lambda: true
+    apiGateway: true
+
   name: aws
   runtime: nodejs10.x
 
@@ -204,7 +208,7 @@ functions:
                 - Ref: AWS::AccountId
                 - ${self:custom.topicName}
           topicName: ${self:custom.topicName}
-        
+
 resources:
   Resources:
     GatewayResponseDefault4XX:
@@ -216,7 +220,7 @@ resources:
           gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
         ResponseType: DEFAULT_4XX
         RestApiId:
-          Ref: ApiGatewayRestApi  
+          Ref: ApiGatewayRestApi
 
     GroupsDynamoDBTable:
       Type: AWS::DynamoDB::Table
@@ -256,17 +260,15 @@ resources:
         TableName: ${self:provider.environment.IMAGES_TABLE}
         StreamSpecification:
           StreamViewType: NEW_IMAGE
-    
+
     WebSocketConnectionsDynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: id
+          - AttributeName: id
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: id
+          - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.CONNECTIONS_TABLE}
@@ -325,14 +327,13 @@ resources:
       Type: AWS::SNS::TopicPolicy
       Properties:
         PolicyDocument:
-          Version: "2012-10-17"
+          Version: '2012-10-17'
           Statement:
             - Effect: Allow
               Principal:
-                AWS: "*"
+                AWS: '*'
               Action: sns:Publish
-              Resource:
-                !Ref ImagesTopic
+              Resource: !Ref ImagesTopic
               Condition:
                 ArnLike:
                   AWS:SourceArn: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}
@@ -373,13 +374,11 @@ resources:
         AccessPolicies:
           Version: '2012-10-17'
           Statement:
-            -
-              Effect: Allow
+            - Effect: Allow
               Principal:
                 AWS: '*'
               Action: 'es:*'
               Resource: '*'
-
 
     KMSKey:
       Type: AWS::KMS::Key
@@ -394,10 +393,10 @@ resources:
               Principal:
                 AWS:
                   Fn::Join:
-                  - ':'
-                  - - 'arn:aws:iam:'
-                    - Ref: AWS::AccountId
-                    - 'root'
+                    - ':'
+                    - - 'arn:aws:iam:'
+                      - Ref: AWS::AccountId
+                      - 'root'
               Action:
                 - 'kms:*'
               Resource: '*'
@@ -414,5 +413,3 @@ resources:
         Name: ${self:provider.environment.AUTH_0_SECRET_ID}
         Description: Auth0 secret
         KmsKeyId: !Ref KMSKey
-          
-          
